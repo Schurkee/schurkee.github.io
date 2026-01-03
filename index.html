@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* This is where you fully customize the look */
+        body { font-family: 'Arial', sans-serif; color: white; background: transparent; }
+        .widget { background: rgba(0,0,0,0.7); padding: 15px; border-radius: 10px; width: 200px; }
+        .elo { font-size: 24px; font-weight: bold; color: #ff5500; }
+    </style>
+</head>
+<body>
+    <div class="widget">
+        <div id="nickname">Loading...</div>
+        <div class="elo" id="elo-val">-</div>
+        <div>Level: <span id="level">-</span></div>
+    </div>
+
+    <script>
+        const API_KEY = 'YOUR_API_KEY_HERE';
+        const PLAYER_NAME = 'YOUR_FACEIT_NAME';
+
+        async function updateStats() {
+            try {
+                // 1. Get Player ID from nickname
+                const playerRes = await fetch(`https://open.faceit.com/data/v4/players?nickname=${PLAYER_NAME}`, {
+                    headers: { 'Authorization': `Bearer ${API_KEY}` }
+                });
+                const data = await playerRes.json();
+
+                // 2. Update UI
+                document.getElementById('nickname').innerText = data.nickname;
+                document.getElementById('elo-val').innerText = data.games.cs2.faceit_elo; // Example for CS2
+                document.getElementById('level').innerText = data.games.cs2.skill_level;
+            } catch (err) {
+                console.error("Error fetching FACEIT stats:", err);
+            }
+        }
+
+        // Refresh every 60 seconds
+        updateStats();
+        setInterval(updateStats, 60000);
+    </script>
+</body>
+</html>
